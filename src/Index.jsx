@@ -50,25 +50,27 @@ const Index = () => {
             <Card style={{ maxHeight: '100%', }}>
                 <Card.Title style={{ paddingTop: 20 }} title="TaskList" titleStyle={{ paddingTop: 5 }} left={LeftContent} />
                 <Card.Content>
-                    <RadioButton.Group
-                        onValueChange={newValue => setFiltro(newValue)}
-                        value={filtro}
-                    >
-                        <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginBottom: 10 }}>
-                            <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                                <RadioButton.Android value="todos" color="#6200EE" />
-                                <Text style={{ fontSize: 12 }}>Todos</Text>
+                    <View style={{ maxWidth: 500 }}>
+                        <RadioButton.Group
+                            onValueChange={newValue => setFiltro(newValue)}
+                            value={filtro}
+                        >
+                            <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginBottom: 10 }}>
+                                <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                                    <RadioButton.Android value="todos" color="#6200EE" />
+                                    <Text style={{ fontSize: 12 }}>Todos</Text>
+                                </View>
+                                <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                                    <RadioButton.Android value="hechas" color="#6200EE" />
+                                    <Text style={{ fontSize: 12 }}>Hechas</Text>
+                                </View>
+                                <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                                    <RadioButton.Android value="porHacer" color="#6200EE" />
+                                    <Text style={{ fontSize: 12 }}>Por hacer</Text>
+                                </View>
                             </View>
-                            <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                                <RadioButton.Android value="hechas" color="#6200EE" />
-                                <Text style={{ fontSize: 12 }}>Hechas</Text>
-                            </View>
-                            <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                                <RadioButton.Android value="porHacer" color="#6200EE" />
-                                <Text style={{ fontSize: 12 }}>Por hacer</Text>
-                            </View>
-                        </View>
-                    </RadioButton.Group>
+                        </RadioButton.Group>
+                    </View>
                     <Divider />
                     <FlatList
                         data={listaFiltrada}
@@ -96,8 +98,8 @@ const Index = () => {
                         keyExtractor={item => item.id.toString()}
                     />
                     <Divider />
-                    <Button onPress={() => ordenAlfabetico('description')} mode="contained" style={{ marginTop: 10 }}>Ordenar por descripción {orden.tipo === 'ascendente' ? 'ascendente' : 'descendente'}</Button>
-                    <Button onPress={() => ordenAlfabetico('dueDate')} mode="contained" style={{ marginTop: 10 }}>Ordenar por fecha {orden.tipo === 'ascendente' ? 'ascendente' : 'descendente'}</Button>
+                    <Button onPress={() => ordenAlfabetico('description')} mode="contained" style={{ marginTop: 10, alignSelf: 'center' }}>Ordenar por descripción {orden.tipo === 'ascendente' ? 'ascendente' : 'descendente'}</Button>
+                    <Button onPress={() => ordenAlfabetico('dueDate')} mode="contained" style={{ marginTop: 10, alignSelf: 'center' }}>Ordenar por fecha {orden.tipo === 'ascendente' ? 'ascendente' : 'descendente'}</Button>
                 </Card.Content>
             </Card>
         </View>

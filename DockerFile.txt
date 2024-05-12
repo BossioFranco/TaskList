@@ -26,6 +26,12 @@ RUN npm install -g eas-cli
 RUN npm install -g expo
 
 
+#Run web based dependencies
+RUN npm i react-native-web@0.19.10
+RUN npm i react-dom@18.2.0
+RUN npm i @expo/metro-runtime@3.2.1
+
+
 #Instalar git
 RUN apk add --update git
 
@@ -38,9 +44,11 @@ RUN expo login -u francob -p tractor1.6
 RUN npm run build
 
 
+
+
 # Expone el puerto en el que se ejecutará el servidor de desarrollo de React native
 EXPOSE 8081
 
 
 # Ejecuta el servidor de desarrollo de React native
-CMD ["npm", "start"]
+CMD ["npx", "expo", "start", "-w"]
