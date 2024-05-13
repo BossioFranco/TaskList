@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { View, FlatList } from 'react-native';
 import { Card, List, Checkbox, RadioButton, Button, Text, Divider, Avatar } from 'react-native-paper';
+import { globalStyles } from './componentes/styles';
 const Index = () => {
     const [lista, setLista] = useState([
         { id: 1, description: 'Lavar los platos ', dueDate: new Date('2024-05-15'), completed: false },
@@ -46,8 +47,8 @@ const Index = () => {
     const LeftContent = props => <Avatar.Icon {...props} icon="format-list-bulleted" />
 
     return (
-        <View style={{ backgroundColor: '#B69EF4', paddingLeft: 15, paddingRight: 15, paddingTop: 15, maxHeight: '98%', overflow: 'hidden' }}>
-            <Card style={{ maxHeight: '100%', }}>
+        <View style={globalStyles.container}>
+            <Card style={globalStyles.card}>
                 <Card.Title style={{ paddingTop: 20 }} title="TaskList" titleStyle={{ paddingTop: 5 }} left={LeftContent} />
                 <Card.Content>
                     <View style={{ maxWidth: 500 }}>
@@ -55,16 +56,16 @@ const Index = () => {
                             onValueChange={newValue => setFiltro(newValue)}
                             value={filtro}
                         >
-                            <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginBottom: 10 }}>
-                                <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                            <View style={globalStyles.radioButtonContainer}>
+                                <View style={globalStyles.radioButton}>
                                     <RadioButton.Android value="todos" color="#6200EE" />
                                     <Text style={{ fontSize: 12 }}>Todos</Text>
                                 </View>
-                                <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                                <View style={globalStyles.radioButton}>
                                     <RadioButton.Android value="hechas" color="#6200EE" />
                                     <Text style={{ fontSize: 12 }}>Hechas</Text>
                                 </View>
-                                <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                                <View style={globalStyles.radioButton}>
                                     <RadioButton.Android value="porHacer" color="#6200EE" />
                                     <Text style={{ fontSize: 12 }}>Por hacer</Text>
                                 </View>
@@ -77,11 +78,11 @@ const Index = () => {
                         style={{ height: 500, }}
                         renderItem={({ item }) => (
                             <List.Item
-                                style={{ backgroundColor: item.completed ? '#AFF49B' : 'white', marginTop: 5, marginBottom: 5 }}
+                                style={[globalStyles.listItem, item.completed && globalStyles.completedItem]}
                                 title={item.description}
-                                titleStyle={[item.completed && { textDecorationLine: 'line-through' }, { fontWeight: 'bold' }]} // Estilo de negrita siempre activo
+                                titleStyle={[item.completed && { textDecorationLine: 'line-through' }, globalStyles.boldText]}
                                 description={item.completed ? '' : 'Vencimiento: ' + item.dueDate.toDateString()}
-                                descriptionStyle={{ fontSize: 12 }}
+                                descriptionStyle={globalStyles.descriptionText}
                                 right={() => (
                                     <Checkbox.Item
                                         status={item.completed ? 'checked' : 'unchecked'}
@@ -98,12 +99,13 @@ const Index = () => {
                         keyExtractor={item => item.id.toString()}
                     />
                     <Divider />
-                    <Button onPress={() => ordenAlfabetico('description')} mode="contained" style={{ marginTop: 10, alignSelf: 'center' }}>Ordenar por descripción {orden.tipo === 'ascendente' ? 'ascendente' : 'descendente'}</Button>
-                    <Button onPress={() => ordenAlfabetico('dueDate')} mode="contained" style={{ marginTop: 10, alignSelf: 'center' }}>Ordenar por fecha {orden.tipo === 'ascendente' ? 'ascendente' : 'descendente'}</Button>
+                    <Button onPress={() => ordenAlfabetico('description')} mode="contained" style={globalStyles.button}>Ordenar por descripción {orden.tipo === 'ascendente' ? 'ascendente' : 'descendente'}</Button>
+                    <Button onPress={() => ordenAlfabetico('dueDate')} mode="contained" style={globalStyles.button}>Ordenar por fecha {orden.tipo === 'ascendente' ? 'ascendente' : 'descendente'}</Button>
                 </Card.Content>
             </Card>
         </View>
     );
+
 };
 
 export default Index;
