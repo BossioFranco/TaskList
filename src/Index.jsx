@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { View, FlatList } from 'react-native';
-import { Card, List, Checkbox, RadioButton, Button, Text, Divider, Avatar } from 'react-native-paper';
+import { Card, RadioButton, Button, Text, Divider, Checkbox, List } from 'react-native-paper';
 import { globalStyles } from './componentes/styles';
 const Index = () => {
     const [lista, setLista] = useState([
@@ -16,7 +16,46 @@ const Index = () => {
         { id: 10, description: 'Cortar el pasto', dueDate: new Date('2024-05-22'), completed: false }
     ]);
     const [filtro, setFiltro] = useState('todos');
-    const [orden, setOrden] = useState({ prop: 'description', tipo: 'ascendente' });
+    const [ordenDescripcion, setOrdenDescripcion] = useState('ascendente');
+    const [ordenFecha, setOrdenFecha] = useState('ascendente');
+    const [mostrarFiltros, setMostrarFiltros] = useState(false);
+
+    const aplicarFiltro = (newValue) => {
+        setFiltro(newValue);
+        setMostrarFiltros(false);
+    };
+
+    const ordenarPorDescripcion = () => {
+        const newList = [...lista];
+        newList.sort((a, b) => {
+            const propA = a.description.toLowerCase();
+            const propB = b.description.toLowerCase();
+
+            if (ordenDescripcion === 'ascendente') {
+                return propA.localeCompare(propB);
+            } else {
+                return propB.localeCompare(propA);
+            }
+        });
+        setLista(newList);
+        setOrdenDescripcion(ordenDescripcion === 'ascendente' ? 'descendente' : 'ascendente');
+    };
+
+    const ordenarPorFecha = () => {
+        const newList = [...lista];
+        newList.sort((a, b) => {
+            const propA = a.dueDate;
+            const propB = b.dueDate;
+
+            if (ordenFecha === 'ascendente') {
+                return propA - propB;
+            } else {
+                return propB - propA;
+            }
+        });
+        setLista(newList);
+        setOrdenFecha(ordenFecha === 'ascendente' ? 'descendente' : 'ascendente');
+    };
 
     const listaFiltrada = lista.filter(item => {
         if (filtro === 'hechas') {
@@ -28,82 +67,58 @@ const Index = () => {
         }
     });
 
-    const ordenAlfabetico = (prop) => {
-        const newList = [...lista];
-        newList.sort((a, b) => {
-            const propA = prop === 'description' ? a.description : a.dueDate;
-            const propB = prop === 'description' ? b.description : b.dueDate;
-
-            if (orden.tipo === 'ascendente') {
-                return propA < propB ? -1 : propA > propB ? 1 : 0;
-            } else {
-                return propA > propB ? -1 : propA < propB ? 1 : 0;
-            }
-        });
-        setLista(newList);
-        setOrden({ prop, tipo: orden.tipo === 'ascendente' ? 'descendente' : 'ascendente' });
-        setFiltro('todos');
-    };
-
-    const LeftContent = props => <Avatar.Icon {...props} icon="format-list-bulleted" />;
-
-    const renderRadioButton = (value, label) => (
-        <View style={globalStyles.radioButton}>
-            <RadioButton.Android value={value} color="#6200EE" />
-            <Text style={{ fontSize: 12 }}>{label}</Text>
-        </View>
-    );
-
-    const renderItem = ({ item }) => (
-        <List.Item
-            style={[globalStyles.listItem, item.completed && globalStyles.completedItem]}
-            title={item.description}
-            titleStyle={[item.completed && { textDecorationLine: 'line-through' }, globalStyles.boldText]}
-            description={item.completed ? '' : 'Vencimiento: ' + item.dueDate.toDateString()}
-            descriptionStyle={globalStyles.descriptionText}
-            right={() => (
-                <Checkbox.Item
-                    status={item.completed ? 'checked' : 'unchecked'}
-                    onPress={() => {
-                        const newList = [...lista];
-                        const index = newList.findIndex(task => task.id === item.id);
-                        newList[index].completed = !newList[index].completed;
-                        setLista(newList);
-                    }}
-                />
-            )}
-        />
-    );
-
     return (
-        <>
-            <View style={globalStyles.container}>
-                <Card style={globalStyles.card}>
-                    <Card.Title style={{ paddingTop: 20 }} title="TaskList" titleStyle={{ paddingTop: 5 }} left={LeftContent} />
-                    <Card.Content>
-                        <View style={{ maxWidth: 500 }}>
+        <View style={globalStyles.container}>
+            <View style={globalStyles.card}>
+                <View style={globalStyles.header}>
+                    <Text style={globalStyles.headerText}>Lista de tareas</Text>
+                    <Divider/>
+                    <Button onPress={() => setMostrarFiltros(!mostrarFiltros)}>Filtros</Button>
+                </View>
+                {mostrarFiltros && (
+                    <Card style={globalStyles.modalCard}>
+                        <Card.Title title="Seleccionar filtro" />
+                        <Card.Content>
                             <RadioButton.Group onValueChange={setFiltro} value={filtro}>
-                                <View style={globalStyles.radioButtonContainer}>
-                                    {renderRadioButton("todos", "Todos")}
-                                    {renderRadioButton("hechas", "Hechas")}
-                                    {renderRadioButton("porHacer", "Por hacer")}
-                                </View>
+                                <RadioButton.Item label="Todos" value="todos" />
+                                <RadioButton.Item label="Hechas" value="hechas" />
+                                <RadioButton.Item label="Por hacer" value="porHacer" />
                             </RadioButton.Group>
-                        </View>
-                        <Divider />
-                        <FlatList
-                            data={listaFiltrada}
-                            style={{ height: 500 }}
-                            renderItem={renderItem}
-                            keyExtractor={item => item.id.toString()}
+                            <Button onPress={ordenarPorDescripcion} style={globalStyles.orderButton}>Ordenar por descripción {ordenDescripcion === 'ascendente' ? '↓' : '↑'}</Button>
+                            <Button onPress={ordenarPorFecha} style={globalStyles.orderButton}>Ordenar por fecha {ordenFecha === 'ascendente' ? '↓' : '↑'}</Button>
+                        </Card.Content>
+                      {/*   <Card.Actions>
+                            <Button onPress={aplicarFiltro}>Cerrar</Button>
+                        </Card.Actions> */}
+                    </Card>
+                )}
+                <Divider />
+                <FlatList
+                    data={listaFiltrada}
+                    renderItem={({ item }) => (
+                        <List.Item
+                            style={[globalStyles.listItem, item.completed && globalStyles.completedItem]}
+                            title={item.description}
+                            titleStyle={[item.completed && { textDecorationLine: 'line-through' }, globalStyles.boldText]}
+                            description={'Vencimiento: ' + item.dueDate.toDateString()}
+                            descriptionStyle={globalStyles.descriptionText}
+                            right={() => (
+                                <Checkbox.Item
+                                    status={item.completed ? 'checked' : 'unchecked'}
+                                    onPress={() => {
+                                        const newList = [...lista];
+                                        const index = newList.findIndex(task => task.id === item.id);
+                                        newList[index].completed = !newList[index].completed;
+                                        setLista(newList);
+                                    }}
+                                />
+                            )}
                         />
-                        <Divider />
-                        <Button onPress={() => ordenAlfabetico('description')} mode="contained" style={globalStyles.button}>Ordenar por descripción {orden.tipo === 'ascendente' ? 'ascendente' : 'descendente'}</Button>
-                        <Button onPress={() => ordenAlfabetico('dueDate')} mode="contained" style={globalStyles.button}>Ordenar por fecha {orden.tipo === 'ascendente' ? 'ascendente' : 'descendente'}</Button>
-                    </Card.Content>
-                </Card>
+                    )}
+                    keyExtractor={item => item.id.toString()}
+                />
             </View>
-        </>
+        </View>
     );
 };
 
