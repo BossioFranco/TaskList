@@ -58,11 +58,9 @@ export const globalStyles = StyleSheet.create({
         alignSelf: 'center',
         borderColor: '#B69EF4',
         borderWidth: 1,
-        borderRadius: 5, // Bordes redondeados para los botones
-        paddingVertical: 0, // Espaciado vertical dentro del botón
-        paddingHorizontal: 0, // Espaciado horizontal dentro del botón
-        marginBottom: 10, // Espaciado inferior para separar los botones
-        color: 'white', // Color del texto blanco para los botones
-        fontSize: 16, // Tamaño del texto de los botones
+        borderRadius: 5, 
+        marginBottom: 10, 
+        color: 'white', 
+        fontSize: 16, 
     },
 });
