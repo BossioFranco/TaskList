@@ -16,7 +16,7 @@ const Index = () => {
         { id: 10, description: 'Cortar el pasto', dueDate: new Date('2024-05-22'), completed: false }
     ]);
     const [filtro, setFiltro] = useState('todos');
-    const [orden, setOrden] = useState({ prop: 'description', tipo: 'ascendente' }); // Estado para almacenar el tipo de ordenación seleccionado
+    const [orden, setOrden] = useState({ prop: 'description', tipo: 'ascendente' });
 
     const listaFiltrada = lista.filter(item => {
         if (filtro === 'hechas') {
@@ -29,7 +29,7 @@ const Index = () => {
     });
 
     const ordenAlfabetico = (prop) => {
-        const newList = [...lista]; // Copia de la lista completa
+        const newList = [...lista];
         newList.sort((a, b) => {
             const propA = prop === 'description' ? a.description : a.dueDate;
             const propB = prop === 'description' ? b.description : b.dueDate;
@@ -42,70 +42,69 @@ const Index = () => {
         });
         setLista(newList);
         setOrden({ prop, tipo: orden.tipo === 'ascendente' ? 'descendente' : 'ascendente' });
-        setFiltro('todos'); // Mantener el filtro como "todos" después de cambiar el orden
+        setFiltro('todos');
     };
-    const LeftContent = props => <Avatar.Icon {...props} icon="format-list-bulleted" />
 
-    return (
-        <View style={globalStyles.container}>
-            <Card style={globalStyles.card}>
-                <Card.Title style={{ paddingTop: 20 }} title="TaskList" titleStyle={{ paddingTop: 5 }} left={LeftContent} />
-                <Card.Content>
-                    <View style={{ maxWidth: 500 }}>
-                        <RadioButton.Group
-                            onValueChange={newValue => setFiltro(newValue)}
-                            value={filtro}
-                        >
-                            <View style={globalStyles.radioButtonContainer}>
-                                <View style={globalStyles.radioButton}>
-                                    <RadioButton.Android value="todos" color="#6200EE" />
-                                    <Text style={{ fontSize: 12 }}>Todos</Text>
-                                </View>
-                                <View style={globalStyles.radioButton}>
-                                    <RadioButton.Android value="hechas" color="#6200EE" />
-                                    <Text style={{ fontSize: 12 }}>Hechas</Text>
-                                </View>
-                                <View style={globalStyles.radioButton}>
-                                    <RadioButton.Android value="porHacer" color="#6200EE" />
-                                    <Text style={{ fontSize: 12 }}>Por hacer</Text>
-                                </View>
-                            </View>
-                        </RadioButton.Group>
-                    </View>
-                    <Divider />
-                    <FlatList
-                        data={listaFiltrada}
-                        style={{ height: 500, }}
-                        renderItem={({ item }) => (
-                            <List.Item
-                                style={[globalStyles.listItem, item.completed && globalStyles.completedItem]}
-                                title={item.description}
-                                titleStyle={[item.completed && { textDecorationLine: 'line-through' }, globalStyles.boldText]}
-                                description={item.completed ? '' : 'Vencimiento: ' + item.dueDate.toDateString()}
-                                descriptionStyle={globalStyles.descriptionText}
-                                right={() => (
-                                    <Checkbox.Item
-                                        status={item.completed ? 'checked' : 'unchecked'}
-                                        onPress={() => {
-                                            const newList = [...lista];
-                                            const index = newList.findIndex(task => task.id === item.id);
-                                            newList[index].completed = !newList[index].completed;
-                                            setLista(newList);
-                                        }}
-                                    />
-                                )}
-                            />
-                        )}
-                        keyExtractor={item => item.id.toString()}
-                    />
-                    <Divider />
-                    <Button onPress={() => ordenAlfabetico('description')} mode="contained" style={globalStyles.button}>Ordenar por descripción {orden.tipo === 'ascendente' ? 'ascendente' : 'descendente'}</Button>
-                    <Button onPress={() => ordenAlfabetico('dueDate')} mode="contained" style={globalStyles.button}>Ordenar por fecha {orden.tipo === 'ascendente' ? 'ascendente' : 'descendente'}</Button>
-                </Card.Content>
-            </Card>
+    const LeftContent = props => <Avatar.Icon {...props} icon="format-list-bulleted" />;
+
+    const renderRadioButton = (value, label) => (
+        <View style={globalStyles.radioButton}>
+            <RadioButton.Android value={value} color="#6200EE" />
+            <Text style={{ fontSize: 12 }}>{label}</Text>
         </View>
     );
 
+    const renderItem = ({ item }) => (
+        <List.Item
+            style={[globalStyles.listItem, item.completed && globalStyles.completedItem]}
+            title={item.description}
+            titleStyle={[item.completed && { textDecorationLine: 'line-through' }, globalStyles.boldText]}
+            description={item.completed ? '' : 'Vencimiento: ' + item.dueDate.toDateString()}
+            descriptionStyle={globalStyles.descriptionText}
+            right={() => (
+                <Checkbox.Item
+                    status={item.completed ? 'checked' : 'unchecked'}
+                    onPress={() => {
+                        const newList = [...lista];
+                        const index = newList.findIndex(task => task.id === item.id);
+                        newList[index].completed = !newList[index].completed;
+                        setLista(newList);
+                    }}
+                />
+            )}
+        />
+    );
+
+    return (
+        <>
+            <View style={globalStyles.container}>
+                <Card style={globalStyles.card}>
+                    <Card.Title style={{ paddingTop: 20 }} title="TaskList" titleStyle={{ paddingTop: 5 }} left={LeftContent} />
+                    <Card.Content>
+                        <View style={{ maxWidth: 500 }}>
+                            <RadioButton.Group onValueChange={setFiltro} value={filtro}>
+                                <View style={globalStyles.radioButtonContainer}>
+                                    {renderRadioButton("todos", "Todos")}
+                                    {renderRadioButton("hechas", "Hechas")}
+                                    {renderRadioButton("porHacer", "Por hacer")}
+                                </View>
+                            </RadioButton.Group>
+                        </View>
+                        <Divider />
+                        <FlatList
+                            data={listaFiltrada}
+                            style={{ height: 500 }}
+                            renderItem={renderItem}
+                            keyExtractor={item => item.id.toString()}
+                        />
+                        <Divider />
+                        <Button onPress={() => ordenAlfabetico('description')} mode="contained" style={globalStyles.button}>Ordenar por descripción {orden.tipo === 'ascendente' ? 'ascendente' : 'descendente'}</Button>
+                        <Button onPress={() => ordenAlfabetico('dueDate')} mode="contained" style={globalStyles.button}>Ordenar por fecha {orden.tipo === 'ascendente' ? 'ascendente' : 'descendente'}</Button>
+                    </Card.Content>
+                </Card>
+            </View>
+        </>
+    );
 };
 
 export default Index;
