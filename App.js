@@ -1,20 +1,11 @@
-import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, View, SafeAreaView } from 'react-native';
+import { SafeAreaView } from 'react-native';
 import Index from './src/Index';
-
+import { globalStyles } from './src/componentes/styles';
 export default function App() {
   return (
 
-    <SafeAreaView style={styles.container}>
+    <SafeAreaView style={globalStyles.containerApp}>
       <Index />
     </SafeAreaView>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    paddingTop:20,
-    backgroundColor: '#B69EF4',
-  },
-});
