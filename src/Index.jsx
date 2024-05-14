@@ -1,9 +1,13 @@
-import React, { useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import { View, FlatList } from 'react-native';
-import { Card, RadioButton, Button, Text, Divider, Checkbox, List } from 'react-native-paper';
+import { Card, RadioButton, Button, Text, Divider, Checkbox, List, Switch, IconButton } from 'react-native-paper';
 import { globalStyles } from './componentes/styles';
+import { globalStylesGreen } from './componentes/styles';
+import { ThemeContext } from './componentes/contexto/ThemeContext';
+
 const Index = () => {
-    const [lista, setLista] = useState([
+    const themeContext = useContext(ThemeContext)
+    const [list, setList] = useState([
         { id: 1, description: 'Lavar los platos ', dueDate: new Date('2024-05-15'), completed: false },
         { id: 2, description: 'Estudiar', dueDate: new Date('2024-05-11'), completed: false },
         { id: 3, description: 'Descansar', dueDate: new Date('2024-05-17'), completed: false },
@@ -15,108 +19,119 @@ const Index = () => {
         { id: 9, description: 'Arreglar la mesa', dueDate: new Date('2024-05-16'), completed: false },
         { id: 10, description: 'Cortar el pasto', dueDate: new Date('2024-05-22'), completed: false }
     ]);
-    const [filtro, setFiltro] = useState('todos');
-    const [ordenDescripcion, setOrdenDescripcion] = useState('ascendente');
-    const [ordenFecha, setOrdenFecha] = useState('ascendente');
-    const [mostrarFiltros, setMostrarFiltros] = useState(false);
+    const [filter, setFilter] = useState('all');
+    const [descriptionOrder, setDescriptionOrder] = useState('ascendant');
+    const [dateOrder, setDateOrder] = useState('ascendant');
+    const [showFilters, setShowFilters] = useState(false);
+    const [style, setStyle] = useState(globalStyles)
 
-    const aplicarFiltro = (newValue) => {
-        setFiltro(newValue);
-        setMostrarFiltros(false);
-    };
+    useEffect(() => {
+        themeContext.theme ? setStyle(globalStyles) : setStyle(globalStylesGreen)
+    }, [themeContext.theme])
 
-    const ordenarPorDescripcion = () => {
-        const newList = [...lista];
+    const sortByDescription = () => {
+        const newList = [...list];
         newList.sort((a, b) => {
             const propA = a.description.toLowerCase();
             const propB = b.description.toLowerCase();
 
-            if (ordenDescripcion === 'ascendente') {
+            if (descriptionOrder === 'ascendant') {
                 return propA.localeCompare(propB);
             } else {
                 return propB.localeCompare(propA);
             }
         });
-        setLista(newList);
-        setOrdenDescripcion(ordenDescripcion === 'ascendente' ? 'descendente' : 'ascendente');
+        setList(newList);
+        setDescriptionOrder(descriptionOrder === 'ascendant' ? 'descendant' : 'ascendant');
     };
 
-    const ordenarPorFecha = () => {
-        const newList = [...lista];
+    const sortByDate = () => {
+        const newList = [...list];
         newList.sort((a, b) => {
             const propA = a.dueDate;
             const propB = b.dueDate;
 
-            if (ordenFecha === 'ascendente') {
+            if (dateOrder === 'ascendant') {
                 return propA - propB;
             } else {
                 return propB - propA;
             }
         });
-        setLista(newList);
-        setOrdenFecha(ordenFecha === 'ascendente' ? 'descendente' : 'ascendente');
+        setList(newList);
+        setDateOrder(dateOrder === 'ascendant' ? 'descendant' : 'ascendant');
     };
 
-    const listaFiltrada = lista.filter(item => {
-        if (filtro === 'hechas') {
+    const filteredList = list.filter(item => {
+        if (filter === 'completed') {
             return item.completed;
-        } else if (filtro === 'porHacer') {
+        } else if (filter === 'toDo') {
             return !item.completed;
         } else {
             return true;
         }
     });
 
+    const toggleSwitch = () => {
+        themeContext.setTheme(!themeContext.theme);
+    };
+
     return (
-        <View style={globalStyles.container}>
-            <View style={globalStyles.card}>
-                <View style={globalStyles.header}>
-                    <Text style={globalStyles.headerText}>Lista de tareas</Text>
-                    <Divider/>
-                    <Button onPress={() => setMostrarFiltros(!mostrarFiltros)}>Filtros</Button>
+        <View style={style.container}>
+            <View style={style.card}>
+                <View style={style.header}>
+                    <Text style={style.headerText}>Lista de tareas</Text>
+                    <Switch value={themeContext.theme} onValueChange={toggleSwitch} />
+                    <IconButton style={{ marginBottom: 5 }} icon={themeContext.theme ? "white-balance-sunny" : 'moon-waning-crescent'} iconColor={themeContext.theme ? '#F8B710' : 'yellow'} onPress={toggleSwitch} />
                 </View>
-                {mostrarFiltros && (
-                    <Card style={globalStyles.modalCard}>
-                        <Card.Title title="Seleccionar filtro" />
+                <Divider />
+                <Button style={style.filterButton} labelStyle={style.filterButton.labelStyle} onPress={() => setShowFilters(!showFilters)}>Filtros {showFilters ? "▼" : "▲"}</Button>
+
+                {showFilters && (
+                    <Card style={style.modalCard} >
                         <Card.Content>
-                            <RadioButton.Group onValueChange={setFiltro} value={filtro}>
-                                <RadioButton.Item label="Todos" value="todos" />
-                                <RadioButton.Item label="Hechas" value="hechas" />
-                                <RadioButton.Item label="Por hacer" value="porHacer" />
+                            <RadioButton.Group onValueChange={setFilter} value={filter}>
+                                <RadioButton.Item label="Todas" value="all" color={style.modalCard.radioButtonModal.color} labelStyle={style.modalCard.labelStyle} />
+                                <RadioButton.Item label="Completadas" value="completed" color={style.modalCard.radioButtonModal.color} labelStyle={style.modalCard.labelStyle} />
+                                <RadioButton.Item label="Para hacer" value="toDo" color={style.modalCard.radioButtonModal.color} labelStyle={style.modalCard.labelStyle} />
                             </RadioButton.Group>
-                            <Button onPress={ordenarPorDescripcion} style={globalStyles.orderButton}>Ordenar por descripción {ordenDescripcion === 'ascendente' ? '↓' : '↑'}</Button>
-                            <Button onPress={ordenarPorFecha} style={globalStyles.orderButton}>Ordenar por fecha {ordenFecha === 'ascendente' ? '↓' : '↑'}</Button>
+                            <Button onPress={sortByDescription} style={style.orderButton} labelStyle={style.orderButton.labelStyle} >Ordenar por descripción {descriptionOrder === 'ascendant' ? '▼' : '▲'}</Button>
+                            <Button onPress={sortByDate} style={style.orderButton} labelStyle={style.orderButton.labelStyle}>Ordenar por fecha {dateOrder === 'ascendant' ? '▼' : '▲'}</Button>
                         </Card.Content>
-                      {/*   <Card.Actions>
-                            <Button onPress={aplicarFiltro}>Cerrar</Button>
-                        </Card.Actions> */}
                     </Card>
                 )}
+
                 <Divider />
-                <FlatList
-                    data={listaFiltrada}
-                    renderItem={({ item }) => (
-                        <List.Item
-                            style={[globalStyles.listItem, item.completed && globalStyles.completedItem]}
-                            title={item.description}
-                            titleStyle={[item.completed && { textDecorationLine: 'line-through' }, globalStyles.boldText]}
-                            description={'Vencimiento: ' + item.dueDate.toDateString()}
-                            descriptionStyle={globalStyles.descriptionText}
-                            right={() => (
-                                <Checkbox.Item
-                                    status={item.completed ? 'checked' : 'unchecked'}
-                                    onPress={() => {
-                                        const newList = [...lista];
-                                        const index = newList.findIndex(task => task.id === item.id);
-                                        newList[index].completed = !newList[index].completed;
-                                        setLista(newList);
-                                    }}
+                {filteredList.length === 0 ? (
+                    <Text style={style.noTask}>No hay tareas</Text>
+                ) : (
+                    <FlatList
+                        data={filteredList}
+                        renderItem={({ item }) => (
+                            <>
+                                <Divider />
+                                <List.Item
+                                    style={[style.listItem, item.completed && style.completedItem]}
+                                    title={item.description}
+                                    titleStyle={[item.completed && { textDecorationLine: 'line-through' }, style.boldText]}
+                                    description={'Vencimiento: ' + item.dueDate.toDateString()}
+                                    descriptionStyle={style.descriptionText}
+                                    right={() => (
+                                        <Checkbox.Item
+                                            uncheckedColor={style.listItem.uncheckedColor.color}
+                                            status={item.completed ? 'checked' : 'unchecked'}
+                                            onPress={() => {
+                                                const newList = [...list];
+                                                const index = newList.findIndex(task => task.id === item.id);
+                                                newList[index].completed = !newList[index].completed;
+                                                setList(newList);
+                                            }}
+                                        />
+                                    )}
                                 />
-                            )}
-                        />
-                    )}
-                    keyExtractor={item => item.id.toString()}
-                />
+                            </>
+                        )}
+                        keyExtractor={item => item.id.toString()}
+                    />)}
             </View>
         </View>
     );
