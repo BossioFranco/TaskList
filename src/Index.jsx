@@ -1,9 +1,9 @@
 import React, { useContext, useEffect, useState } from 'react';
 import { View, FlatList } from 'react-native';
 import { Card, RadioButton, Button, Text, Divider, Checkbox, List, Switch, IconButton } from 'react-native-paper';
-import { globalStyles } from './componentes/styles';
-import { globalStylesGreen } from './componentes/styles';
-import { ThemeContext } from './componentes/contexto/ThemeContext';
+import { globalStyles } from './components/styles';
+import { globalStylesGreen } from './components/styles';
+import { ThemeContext } from './components/contexts/ThemeContext';
 
 const Index = () => {
     const themeContext = useContext(ThemeContext)
