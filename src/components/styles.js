@@ -102,7 +102,7 @@ export const globalStyles = StyleSheet.create({
 
 });
 
-export const globalStylesGreen = StyleSheet.create({
+export const globalStylesDark = StyleSheet.create({
     containerApp: {
         flex: 1,
         paddingTop: 20,

@@ -2,7 +2,7 @@ import React, { useContext, useEffect, useState } from 'react';
 import { View, FlatList } from 'react-native';
 import { Card, RadioButton, Button, Text, Divider, Checkbox, List, Switch, IconButton } from 'react-native-paper';
 import { globalStyles } from './components/styles';
-import { globalStylesGreen } from './components/styles';
+import { globalStylesDark } from './components/styles';
 import { ThemeContext } from './components/contexts/ThemeContext';
 
 const Index = () => {
@@ -26,7 +26,7 @@ const Index = () => {
     const [style, setStyle] = useState(globalStyles)
 
     useEffect(() => {
-        themeContext.theme ? setStyle(globalStyles) : setStyle(globalStylesGreen)
+        themeContext.theme ? setStyle(globalStyles) : setStyle(globalStylesDark)
     }, [themeContext.theme])
 
     const sortByDescription = () => {
